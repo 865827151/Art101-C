@@ -1,0 +1,48 @@
+/* 设置列表居中 */
+li { 
+    text-align: center; 
+    list-style-position: inside;
+}
+
+ol {
+    max-width: 200px;
+    margin: 0 auto;
+    padding: 0;
+    list-style-position: inside;
+}
+/* 设置全局字体和背景色 */
+html { 
+    font-family: Sans-serif;
+    background-color: pink; 
+}
+
+.highlight_01 { 
+    background-color: azure; 
+}
+
+.highlight_02 { 
+    background-color: rgb(247, 83, 206); 
+}
+
+/* 针对这个大盒子的设置 */
+.main-content {
+    text-align: center;      /* 让盒子内部的所有文字、图片居中 */
+    display: flex;           /* 开启弹性布局 */
+    flex-direction: column;  /* 让内容垂直排列 */
+    align-items: center;     /* 让里面的所有元素（包括图片和列表）在水平方向居中 */
+}
+
+.image-row{
+    display: flex;
+    flex-direction: row;
+    justify-content: center; /* 水平居中对齐图片 */
+    align-items: center; /*中线居中对齐 */
+    gap: 20px;
+
+}
+
+#Pink-1 {width: 300px; height: auto;}
+
+#Pink-2 {width: 250px; height: auto;}
+
+#Pink-3 {width: 200px; height: auto;}
