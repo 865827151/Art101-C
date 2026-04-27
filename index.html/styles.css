@@ -49,9 +49,9 @@ html {
 }
 
 .profile img {
-    width: 100%;        /* 填满盒子宽度 */
-    max-width: 300px;   /* 最大不超 300px */
-    border-radius: 20px; /* 圆角增加高级感 */
+    width: 100%;
+    max-width: 300px;
+    border-radius: 20px;
     border: 3px solid rgb(247, 83, 206);
 }
 
@@ -61,10 +61,9 @@ html {
     margin-top: 10px;
 }
 
-/* --- 导航栏样式 --- */
 .navigation {
     margin-top: 40px;
-    background: rgba(255, 247, 232, 0.1); /* 极淡的透明背景 */
+    background: rgba(255, 247, 232, 0.1);
     padding: 20px;
     border-radius: 12px;
 }
