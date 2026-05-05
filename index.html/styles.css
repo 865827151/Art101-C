@@ -95,3 +95,68 @@ hr {
     border-top: 1px dashed rgba(255, 255, 255, 0.3);
     margin: 30px 0;
 }
+
+/* Wiki 交互区域样式 */
+.wiki-interaction {
+    margin: 30px 0;
+    text-align: center;
+}
+
+/* 按钮样式：符合你的粉色主题 */
+#needy-button {
+    background-color: rgb(247, 83, 206);
+    color: black;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(247, 83, 206, 0.3);
+}
+
+#needy-button:hover {
+    background-color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(247, 83, 206, 0.5);
+}
+
+/* 数据输出框：干净、带磨砂感 */
+#output {
+    margin-top: 30px;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(247, 83, 206, 0.3);
+    border-radius: 15px;
+    text-align: left;
+    min-height: 150px;
+}
+
+#output h3 {
+    color: rgb(247, 83, 206);
+    margin-top: 0;
+}
+
+#needy-button {
+    background-color: rgb(247, 83, 206);
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#needy-button:hover {
+    background-color: white;
+    box-shadow: 0 0 15px rgb(247, 83, 206);
+}
+
+.wiki-card {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    margin-top: 20px;
+}
