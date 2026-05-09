@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Gallery | Xitao Liao Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { transition: background-color 0.8s ease; }
+        .char-card { transition: transform 0.4s ease, opacity 0.4s ease; }
+    </style>
+</head>
+<body class="gallery-body">
+
+    <div id="page">
+        <nav class="navigation">
+            <a href="index.html">Home</a>
+            <a href="lab04.html">Database</a>
+            </nav>
+
+        <header class="gallery-header">
+            <h1 class="main-title">Character Archive</h1>
+            <div class="search-container">
+                <input type="text" id="char-search" placeholder="Search by name... (❛◡❛✿)">
+            </div>
+        </header>
+
+        <main class="gallery-grid">
+            <div class="char-card" data-name="bocchi hitori gotoh">
+                <a href="lab04.html?id=0">
+                    <div class="glass-cover">
+                        <img src="images/Boochi.jpg" alt="Bocchi">
+                        <h3>Bocchi</h3>
+                    </div>
+                </a>
+            </div>
+
+            <div class="char-card" data-name="kita ikuyo">
+                <a href="lab04.html?id=1">
+                    <div class="glass-cover">
+                        <img src="images/Kita.jpg" alt="Kita">
+                        <h3>Kita</h3>
+                    </div>
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            
+            /**
+             * 【Lab 5 核心函数：applyFilter】
+             * 功能：封装搜索逻辑，并根据输入改变页面环境
+             */
+            function applyFilter(userInput) {
+                var value = userInput.toLowerCase().trim();
+
+                // 1. 执行筛选逻辑 (Conditionals 内部逻辑)
+                $(".char-card").filter(function() {
+                    $(this).toggle($(this).attr("data-name").indexOf(value) > -1);
+                });
+
+                // 2. 环境氛围反馈 (Environment Change)
+                // 输入特定名字时，背景色会平滑切换，增加交互深度
+                if (value === "bocchi") {
+                    $("body").css("background-color", "#fff0f5"); // 氛围 A: 粉色
+                } else if (value === "kita") {
+                    $("body").css("background-color", "#fff5ee"); // 氛围 B: 暖橙
+                } else {
+                    $("body").css("background-color", "#ffffff"); // 默认
+                }
+            }
+
+            // 监听搜索框
+            $("#char-search").on("keyup", function() {
+                var searchVal = $(this).val();
+                
+                // 调用函数并传递参数 (符合 Lab 5 要求)
+                applyFilter(searchVal);
+            });
+        });
+    </script>
+</body>
+</html>
