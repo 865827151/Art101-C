@@ -463,3 +463,35 @@ body {
         right: 20px;
     }
 }
+
+/* --- 针对手机端 Menu 无法点击的专项修复 --- */
+@media (max-width: 600px) {
+    /* 1. 提高导航栏层级，确保它在最顶层 */
+    .navigation {
+        z-index: 9999 !important;
+        /* 稍微拉开一点距离，防止手指按不到 */
+        top: 25px !important;
+        right: 25px !important;
+    }
+
+    /* 2. 扩大 MENU 的点击感应区 */
+    .menu-trigger {
+        padding: 15px !important; 
+        margin: -15px !important; /* 负边距让感应区变大但不影响视觉位置 */
+        opacity: 0.8 !important;   /* 手机端让它亮一点，方便找 */
+    }
+
+    /* 3. 修复下拉菜单在手机上的位置 */
+    .dropdown-content {
+        right: 0 !important;
+        top: 40px !important;
+        min-width: 180px !important;
+        /* 增加阴影，让它在手机背景上更清晰 */
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important;
+    }
+
+    /* 4. 防止被主标题挡住 */
+    .gallery-header {
+        padding-top: 100px !important;
+    }
+}
