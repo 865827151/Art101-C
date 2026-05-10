@@ -3,82 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Character Gallery | Xitao Liao Portfolio</title>
+    <title>Character Gallery | Archive</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        body { transition: background-color 0.8s ease; }
-        .char-card { transition: transform 0.4s ease, opacity 0.4s ease; }
+        /* 强制背景为白色 */
+        body { 
+            background-color: #ffffff !important; 
+            margin: 0;
+            padding: 0;
+        }
+
+        .gallery-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+
+        .char-card {
+            flex: 0 1 calc(25% - 25px);
+            min-width: 220px;
+            text-align: center;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .char-card img {
+            width: 100%;
+            border-radius: 18px;
+            /* 保持轻微阴影增加质感，但在白底上非常干净 */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+        }
+
+        .char-card h3 {
+            font-weight: 300;
+            color: #333;
+            margin-top: 15px;
+        }
+
+        #char-search {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid #eee;
+            width: 250px;
+            outline: none;
+            font-family: inherit;
+            transition: border 0.3s;
+        }
+
+        #char-search:focus {
+            border-color: #ccc;
+        }
     </style>
 </head>
-<body class="gallery-body">
+<body>
 
     <div id="page">
         <nav class="navigation">
             <a href="index.html">Home</a>
             <a href="lab04.html">Database</a>
-            </nav>
+        </nav>
 
-        <header class="gallery-header">
-            <h1 class="main-title">Character Archive</h1>
-            <div class="search-container">
-                <input type="text" id="char-search" placeholder="Search by name... (❛◡❛✿)">
-            </div>
+        <header style="text-align:center; margin-top:80px;">
+            <h1 class="main-title" style="font-weight: 300; letter-spacing: 2px;">Character Archive</h1>
+            <input type="text" id="char-search" placeholder="Search... (❛◡❛✿)">
         </header>
 
-        <main class="gallery-grid">
-            <div class="char-card" data-name="bocchi hitori gotoh">
-                <a href="lab04.html?id=0">
-                    <div class="glass-cover">
-                        <img src="images/Boochi.jpg" alt="Bocchi">
-                        <h3>Bocchi</h3>
-                    </div>
-                </a>
-            </div>
-
-            <div class="char-card" data-name="kita ikuyo">
-                <a href="lab04.html?id=1">
-                    <div class="glass-cover">
-                        <img src="images/Kita.jpg" alt="Kita">
-                        <h3>Kita</h3>
-                    </div>
-                </a>
-            </div>
-        </main>
+        <main class="gallery-grid" id="gallery-grid"></main>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="lab04.js"></script>
+
     <script>
-        $(document).ready(function(){
-            
-            /**
-             * 【Lab 5 核心函数：applyFilter】
-             * 功能：封装搜索逻辑，并根据输入改变页面环境
-             */
-            function applyFilter(userInput) {
-                var value = userInput.toLowerCase().trim();
+        $(document).ready(function() {
+            // 1. 动态渲染函数
+            function renderGallery() {
+                const container = $("#gallery-grid");
+                container.empty();
 
-                // 1. 执行筛选逻辑 (Conditionals 内部逻辑)
-                $(".char-card").filter(function() {
-                    $(this).toggle($(this).attr("data-name").indexOf(value) > -1);
+                // 遍历 lab04.js 里的数组
+                characters.forEach((char, index) => {
+                    const card = `
+                        <div class="char-card" data-name="${char.title.toLowerCase()}">
+                            <a href="lab04.html?id=${index}" style="text-decoration: none; color: inherit;">
+                                <div class="glass-cover">
+                                    <img src="${char.img}" alt="${char.title}">
+                                    <h3>${char.title}</h3>
+                                </div>
+                            </a>
+                        </div>
+                    `;
+                    container.append(card);
                 });
-
-                // 2. 环境氛围反馈 (Environment Change)
-                // 输入特定名字时，背景色会平滑切换，增加交互深度
-                if (value === "bocchi") {
-                    $("body").css("background-color", "#fff0f5"); // 氛围 A: 粉色
-                } else if (value === "kita") {
-                    $("body").css("background-color", "#fff5ee"); // 氛围 B: 暖橙
-                } else {
-                    $("body").css("background-color", "#ffffff"); // 默认
-                }
             }
 
-            // 监听搜索框
+            renderGallery();
+
+            // 2. 纯净搜索逻辑（不改变背景色）
             $("#char-search").on("keyup", function() {
-                var searchVal = $(this).val();
+                let val = $(this).val().toLowerCase().trim();
                 
-                // 调用函数并传递参数 (符合 Lab 5 要求)
-                applyFilter(searchVal);
+                $(".char-card").each(function() {
+                    // 如果名字匹配就显示，不匹配就隐藏
+                    $(this).toggle($(this).attr("data-name").includes(val));
+                });
             });
         });
     </script>

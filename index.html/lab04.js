@@ -1,6 +1,6 @@
 /**
  * ART101 Lab 5 - Functions & Conditionals
- * 功能：封装环境函数，解决跳转闪烁，实现状态循环解密
+ * 功能：封装环境函数，解决跳转闪烁，支持 4 位角色状态循环解密
  */
 
 const characters = [
@@ -19,6 +19,22 @@ const characters = [
         color: "#fff5ee",
         instrument: "Gibson Les Paul Junior",
         states: ["Kita-aura ✨", "Social Butterfly Mode", "Vocalist Mode", "Guitar Learner"]
+    },
+    {
+        title: "Nijika",
+        name: "伊地知虹夏 (Nijika Ijichi)",
+        img: "images/nijika.jpg",
+        color: "#fffdf0", // 虹夏黄背景
+        instrument: "Yamaha Recording Custom Drum Kit",
+        states: ["Angel of Shimokitazawa", "Kessoku Band Leader", "Big Sister Mode", "Energetic Drummer"]
+    },
+    {
+        title: "Ryo",
+        name: "山田凉 (Ryo Yamada)",
+        img: "images/ryo.jpg",
+        color: "#f0f5ff", // 凉蓝色背景
+        instrument: "Fender Precision Bass",
+        states: ["Eccentric Bassist", "Grass Eater", "Cool Blue Mode", "Solo Composer"]
     }
 ];
 
@@ -31,19 +47,19 @@ let stateClickCount = 0; // 用于追踪点击次数，实现状态循环
 function switchCharacter(index) {
     let idx = parseInt(index);
 
-    // --- 【Lab 5 条件判断】 ---
+    // --- 【Lab 5 条件判断】：确保索引在 0-3 之间 ---
     if (idx >= 0 && idx < characters.length) {
         charIndex = idx;
         stateClickCount = 0; // 换人时重置状态点击计数
         const char = characters[charIndex];
 
-        // 改变背景环境
+        // 改变背景环境颜色
         $("body").css({
             "background-color": char.color,
             "transition": "background-color 0.8s ease"
         });
 
-        // 解决闪烁动画
+        // 解决闪烁动画逻辑
         $(".character-card").animate({ opacity: 0 }, 200, function() {
             $(".main-title").text("Character File: " + char.title);
             $("#char-img").attr("src", char.img);
@@ -59,7 +75,6 @@ function switchCharacter(index) {
 
 /**
  * --- 【新增函数：展示并循环状态】 ---
- * 满足 Lab 5 关于封装动作的要求
  */
 function decryptStatus() {
     stateClickCount++; // 每次点击增加计数
@@ -73,11 +88,11 @@ function decryptStatus() {
     message += `<h3>Decrypted File #${stateClickCount}</h3>`;
     message += `<p><strong>Name:</strong> ${char.name}</p>`;
     message += `<p><strong>Instrument:</strong> ${char.instrument}</p>`;
-    message += `<p><strong>Current State:</strong> <span style="color:rgb(247, 83, 206);">${currentState}</span></p>`;
+    message += `<p><strong>Current State:</strong> <span style="color:rgb(247, 83, 206); font-weight:bold;">${currentState}</span></p>`;
     
-    // 如果是特殊状态，加一个警告提醒
-    if(currentState.includes("Meltdown") || currentState.includes("aura")) {
-        message += `<p style="margin-top:10px; font-size:12px; color:#ffb6c1;"><i>⚠️ Signal Anomaly detected.</i></p>`;
+    // 特殊状态警告提醒 (满足包含特殊字符串的判断)
+    if(currentState.includes("Meltdown") || currentState.includes("aura") || currentState.includes("Angel")) {
+        message += `<p style="margin-top:10px; font-size:12px; color:#ffb6c1;"><i>⚠️ Signal Anomaly: High intensity energy detected.</i></p>`;
     }
     message += `</div>`;
 
@@ -85,7 +100,7 @@ function decryptStatus() {
 }
 
 $(document).ready(function() {
-    // A. 处理初始化加载
+    // A. 处理初始化加载 (从画廊跳转或默认加载)
     const urlParams = new URLSearchParams(window.location.search);
     const charId = urlParams.get('id');
 
@@ -95,12 +110,12 @@ $(document).ready(function() {
         switchCharacter(0);
     }
 
-    // B. 【黑按钮点击】：直接调用解密函数，实现状态循环
+    // B. 【黑按钮点击】：执行解密，Initial State 循环切换
     $("#needy-button").click(function() {
         decryptStatus();
     });
 
-    // C. 【右下角箭头】：调用换人函数
+    // C. 【右下角箭头】：通过函数切换到下一个角色环境
     $("#next-char-trigger").click(function() {
         let next = (charIndex + 1) % characters.length;
         switchCharacter(next);
