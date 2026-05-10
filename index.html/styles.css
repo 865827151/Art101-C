@@ -395,3 +395,71 @@ body {
     transform: translateY(10px);
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
+
+/* --- 移动端适配补丁：仅在屏幕宽度小于 1024px 时生效 --- */
+@media (max-width: 1024px) {
+    /* 1. 调整导航栏位置和大小，防止在 iPad 上太靠边 */
+    .navigation {
+        top: 30px;
+        right: 30px;
+    }
+
+    /* 2. 调整画廊网格：iPad 上每行显示 2 个 */
+    .gallery-grid {
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .char-card {
+        width: calc(50% - 20px); /* 屏幕变窄时，宽度改为占据一半 */
+    }
+}
+/*---------------------------------------------------------------------------------*/
+
+/* --- 手机端适配补丁：仅在屏幕宽度小于 600px 时生效 --- */
+@media (max-width: 600px) {
+    /* 1. 详情页图片缩小，防止手机上图片太大撑破屏幕 */
+    .image-wrapper img {
+        max-width: 90% !important;
+        height: auto;
+    }
+
+    /* 2. 标题字号调小，防止换行太难看 */
+    .main-title {
+        font-size: 20px !important;
+        letter-spacing: 2px !important;
+    }
+
+    /* 3. 搜索框适配 */
+    .search-container input {
+        width: 85% !important;
+    }
+    .search-container input:focus {
+        width: 90% !important;
+    }
+
+    /* 4. 画廊网格：手机上每行显示 1 个 */
+    .gallery-grid {
+        padding: 15px;
+    }
+
+    .char-card {
+        width: 100% !important; /* 手机上撑满宽度 */
+        max-width: 320px;       /* 但限制一个最大值，保持精致感 */
+    }
+
+    /* 5. 调整右下角悬浮按钮大小，防止遮挡内容 */
+    #next-char-trigger {
+        width: 50px !important;
+        height: 50px !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        font-size: 18px !important;
+    }
+
+    /* 6. 导航菜单适配 */
+    .navigation {
+        top: 20px;
+        right: 20px;
+    }
+}
