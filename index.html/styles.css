@@ -495,3 +495,142 @@ body {
         padding-top: 100px !important;
     }
 }
+
+/*---------------------------------------------------------------------------------*/
+
+/* ==========================================================================
+   Lab 6 专用：仅在详情页生效的 3D 图片翻转与毛玻璃增量样式
+   ========================================================================== */
+
+/* 1. 为详情页的图片区域提供 3D 视距 */
+.main-content .card-scene {
+    perspective: 1200px;
+    margin-bottom: 30px; /* 代替原有的图片底部间距 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 2. 让原本的 .image-wrapper 变成一个可以正反面翻转的立体盒子 */
+.main-content .image-wrapper {
+    width: 380px;        /* 严格保持你原本的高级感正方形尺寸 */
+    height: 380px;       
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    margin-bottom: 0 !important; /* 消除老样式的干扰，由外层舞台控制间距 */
+}
+
+/* 3. 当被 jQuery 注入 flipped 类时，仅让图片容器翻转 180 度 */
+.main-content .image-wrapper.flipped {
+    transform: rotateY(180deg);
+}
+
+/* 4. 统一正背面的宽高，并在翻转时隐藏各自的背面 */
+.main-content .card-front, 
+.main-content .card-back {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 24px; /* 改为高级感的大圆角，让背面的毛玻璃排版更柔和 */
+    overflow: hidden;
+}
+
+/* 正面层（保持你原本图片的层级） */
+.main-content .card-front {
+    z-index: 2;
+    background: transparent;
+}
+
+.main-content .card-front img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 0 !important; /* 清除原有间距 */
+}
+
+/* 背面层：极致纯净的 Apple 风格玻璃拟态 (Glassmorphism) */
+.main-content .card-back {
+    transform: rotateY(180deg); /* 默认背对用户 */
+    background: rgba(255, 255, 255, 0.4); /* 极淡的透明白 */
+    -webkit-backdrop-filter: blur(25px);   /* 丝滑的毛玻璃模糊 */
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.6); /* 漫反射边缘微光 */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03); /* 极其克制的落地阴影 */
+    box-sizing: border-box;
+    z-index: 1;
+}
+
+/* 5. 毛玻璃内部文字极致排版 */
+.main-content .back-content {
+    padding: 45px 35px;
+    color: #1d1d1f;
+    text-align: left;
+}
+
+.main-content .back-title {
+    font-size: 20px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    margin: 0 0 4px 0;
+}
+
+.main-content .back-instrument {
+    font-size: 11px;
+    color: #86868b;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 0 0 20px 0;
+}
+
+.main-content .minimal-line {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    margin-bottom: 20px;
+}
+
+.main-content .back-states-list h4 {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    color: #515154;
+}
+
+.main-content .back-states-list ul {
+    list-style: none;
+}
+
+.main-content .back-states-list li {
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    color: #1d1d1f;
+    padding-left: 15px;
+    position: relative;
+}
+
+.main-content .back-states-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #86868b;
+}
+
+/* 6. Lab 6 评分点：全局舞台聚光灯跟随光圈 */
+#spotlight {
+    display: none;
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 50%;
+    pointer-events: none; /* 确保不阻挡鼠标 hover 感应 */
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+}

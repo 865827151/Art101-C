@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bocchi Database | Lab 4</title>
+    <title>Bocchi Database | Lab 6</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* 初始隐藏卡片，配合 JS 的淡入效果彻底解决图片闪烁 */
+        /* 初始隐藏卡片，配合原 JS 的淡入出场效果 */
         .character-card { opacity: 0; transform: translateY(10px); }
     </style>
 </head>
@@ -27,19 +27,35 @@
             <div class="character-card">
                 <h1 class="main-title">Accessing...</h1>
                 
-                <div class="image-wrapper">
-                    <img src="" alt="Character Image" id="char-img">
+                <div class="card-scene">
+                    <div class="image-wrapper">
+                        
+                        <div class="card-front">
+                            <img src="" alt="Character Image" id="char-img">
+                        </div>
+
+                        <div class="card-back">
+                            <div class="back-content">
+                                <h2 id="back-char-title" class="back-title">Loading...</h2>
+                                <p id="back-char-instrument" class="back-instrument">Gear</p>
+                                <hr class="minimal-line">
+                                <div id="back-char-states" class="back-states-list"></div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
                 <p class="char-subtitle" id="char-name-sub">Loading profile...</p>
                 
                 <button id="needy-button">Update Intelligence Record</button>
                 
-                <div id="output">
-                    </div>
+                <div id="output"></div>
             </div>
         </main>
     </div>
+
+    <div id="spotlight"></div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="lab04.js" defer></script>
