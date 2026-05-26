@@ -1,13 +1,13 @@
 /* ==========================================================================
-   Design Gallery Page - 3D Free-Spinning Architecture (Lab 7)
+   Design Gallery Page - True Aspect Ratio Auto-Adaptation (Lab 7 Master)
    ========================================================================== */
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box !important;
-    user-select: none; /* 🚀 拖拽核心：防止拖动鼠标时选中文本蓝块 */
-    -webkit-user-drag: none; /* 防止拖动时触发浏览器默认的图片拖拽 */
+    user-select: none; /* 防止鼠标自由拖拽时选中文本 */
+    -webkit-user-drag: none; /* 防止触发浏览器默认的图片拖拽 */
 }
 
 body.carousel-body {
@@ -58,89 +58,99 @@ body.carousel-body {
     letter-spacing: 1px !important;
 }
 
-/* 🎬 3D 舞台视距 */
+/* 🎬 3D 舞台视距外壳 */
 .carousel-container {
-    width: 600px !important; 
-    height: 395px !important; 
+    width: 500px !important; 
+    height: 400px !important; 
     position: relative !important;
     perspective: 1800px !important; 
     margin-top: 20px !important;
-    cursor: grab; /* 🚀 抓取手势：提示用户这里可以按住拖拽 */
+    cursor: grab; 
 }
 
 .carousel-container:active {
-    cursor: grabbing; /* 按住时的抓取手势 */
+    cursor: grabbing;
 }
 
-/* 3D 大旋转门底盘：拖拽时去掉 transition 保证手感跟手，松开时由 JS 控制平滑过渡 */
+/* 3D 大旋转门底盘 */
 .carousel-wheel {
-    width: 600px !important;   
-    height: 395px !important;  
+    width: 500px !important;   
+    height: 400px !important;  
     position: absolute !important;
     top: 50% !important;
     left: 50% !important;
-    margin-top: -197px !important;        
-    margin-left: -300px !important;       
+    margin-top: -200px !important;        
+    margin-left: -250px !important;       
     transform-style: preserve-3d !important; 
     transform: translateZ(-250px) rotateY(0deg); 
     pointer-events: auto !important;
 }
 
-/* 💎 压克力玻璃外壳 */
+/* 💎 压克力玻璃卡片外壳（🚀 重构：解开固定宽高，改为最大宽高自适应撑开） */
 .carousel-card.glass-card {
     position: absolute !important;
-    width: 280px !important;  
-    height: 395px !important; 
+    width: 290px !important;        /* 基准宽度 */
+    max-height: 400px !important;    /* 限制最大高度，防止图片过高穿帮 */
     left: 50% !important;
-    top: 0 !important;
-    margin-left: -140px !important; 
-    background: rgba(255, 255, 255, 0.01) !important;
-    border: 1px solid rgba(0, 0, 0, 0.12) !important; 
-    border-radius: 20px !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.01) !important; 
+    top: 50% !important;
+    margin-left: -145px !important; /* 精准水平居中 */
+    transform-origin: center center !important;
+    background: transparent !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important; 
+    border-radius: 20px !important; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02) !important; 
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden !important; 
     pointer-events: auto !important;
     -webkit-backface-visibility: visible !important;
     backface-visibility: visible !important;
-    transition: border-color 0.4s ease, box-shadow 0.4s ease !important;
+    z-index: 50 !important;
 }
 
-/* 🚀 4个方向几何坐标牢牢固定 */
-.carousel-card[data-index="0"] { transform: rotateY(0deg) translateZ(250px) !important; }
-.carousel-card[data-index="1"] { transform: rotateY(90deg) translateZ(250px) !important; }
-.carousel-card[data-index="2"] { transform: rotateY(180deg) translateZ(250px) !important; }
-.carousel-card[data-index="3"] { transform: rotateY(270deg) translateZ(250px) !important; }
+/* 🚀 4个方向 3D 空间坐标偏置（垂直位移强行重置为居中对齐） */
+.carousel-card[data-index="0"] { transform: translate(-50%, -50%) rotateY(0deg) translateZ(250px) !important; margin-left: 0 !important; top: 50% !important; left: 50% !important; }
+.carousel-card[data-index="1"] { transform: translate(-50%, -50%) rotateY(90deg) translateZ(250px) !important; margin-left: 0 !important; top: 50% !important; left: 50% !important; }
+.carousel-card[data-index="2"] { transform: translate(-50%, -50%) rotateY(180deg) translateZ(250px) !important; margin-left: 0 !important; top: 50% !important; left: 50% !important; }
+.carousel-card[data-index="3"] { transform: translate(-50%, -50%) rotateY(270deg) translateZ(250px) !important; margin-left: 0 !important; top: 50% !important; left: 50% !important; }
 
-/* 正中央焦点状态：由 JS 动态计算分发（当卡片面向观众时激活） */
+/* 当卡片转到最正面时激活 */
 .carousel-card.glass-card.facing-front {
-    border-color: rgba(0, 0, 0, 0.25) !important;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.05) !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.04) !important;
     z-index: 100 !important;
 }
 
+/* 作品图片容器盒子 */
 .card-image-box {
     width: 100% !important;
-    height: 100% !important; 
-    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important; 
+    overflow: hidden !important;
 }
 
 .card-image-box img {
     width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important; 
+    height: auto !important;         /* 🚀 高度自适应，横图就扁，竖图就高 */
+    max-height: 400px !important;
+    object-fit: contain !important; /* 💡 终极核心：保证图片100%完整，绝对不裁剪任何边缘 */
+    border-radius: 20px !important; /* 让图片本身带上优雅圆角 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important; /* 给海报加一层精致的微投影 */
     display: block !important;
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) !important; 
 }
 
 /* 空置槽位的透明压克力效果 */
 .empty-card {
     width: 100% !important;
-    height: 100% !important;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.003) 100%) !important;
+    height: 380px !important;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.015) 0%, rgba(0, 0, 0, 0.002) 100%) !important;
     -webkit-backdrop-filter: blur(15px) !important;
     backdrop-filter: blur(15px) !important;
     border-radius: 20px !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
 .acrylic-reflection {
@@ -149,49 +159,23 @@ body.carousel-body {
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    background: linear-gradient(105deg, transparent 30%, rgba(0, 0, 0, 0.01) 40%, rgba(0, 0, 0, 0.02) 45%, transparent 50%) !important;
+    background: linear-gradient(105deg, transparent 30%, rgba(0, 0, 0, 0.005) 40%, rgba(0, 0, 0, 0.01) 45%, transparent 50%) !important;
 }
 
-/* 全英文奶油白磨砂 Hover 面板 */
 .card-hover-overlay {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    background: rgba(255, 255, 255, 0.94) !important; 
-    -webkit-backdrop-filter: blur(25px) !important;   
-    backdrop-filter: blur(25px) !important;
-    opacity: 0 !important; 
+    display: none !important;
+    opacity: 0 !important;
     visibility: hidden !important;
-    padding: 35px 20px !important; 
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    transition: opacity 0.35s ease, visibility 0.35s ease !important;
-    z-index: 999 !important;
 }
 
-.overlay-title { font-size: 14px !important; font-weight: 500 !important; letter-spacing: 1px !important; color: #1d1d1f !important; margin-bottom: 8px !important; text-transform: uppercase !important; }
-.overlay-desc { font-size: 11px !important; line-height: 1.6 !important; color: #333336 !important; letter-spacing: 0.2px !important; }
-
-/* 🚨 触碰瞬间：只有当前正面对准观众的卡片，才允许触发向外挺出放大和磨砂融化 */
-.carousel-card[data-index="0"].facing-front:hover { transform: rotateY(0deg) translateZ(250px) scale(1.1) !important; }
-.carousel-card[data-index="1"].facing-front:hover { transform: rotateY(90deg) translateZ(250px) scale(1.1) !important; }
-.carousel-card[data-index="2"].facing-front:hover { transform: rotateY(180deg) translateZ(250px) scale(1.1) !important; }
-.carousel-card[data-index="3"].facing-front:hover { transform: rotateY(270deg) translateZ(250px) scale(1.1) !important; }
-
-.carousel-wheel .carousel-card.facing-front:hover {
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08) !important;
-    z-index: 9999 !important;
+/* ==========================================================================
+   🚨 统一纯图片 Hover 放大触发链 🚨
+   ========================================================================== */
+.carousel-card.facing-front:hover .card-image-box img {
+    transform: scale(1.05) !important; /* 悬停时图片极其丝滑地放大 1.05 倍 */
 }
 
-.carousel-wheel .carousel-card.facing-front:hover .card-hover-overlay {
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-/* 下方数据解码大抽屉 */
+/* 下方数据大抽屉 */
 .carousel-meta-drawer {
     position: absolute !important;
     bottom: 50px !important; 
@@ -201,4 +185,3 @@ body.carousel-body {
 }
 #meta-title { font-size: 14px !important; font-weight: 400 !important; letter-spacing: 2px !important; color: #1d1d1f !important; margin-bottom: 6px !important; text-transform: uppercase !important; }
 .drawer-line { border: none !important; border-top: 1px solid rgba(0, 0, 0, 0.06) !important; width: 40px !important; margin: 10px auto !important; }
-#meta-desc { font-size: 11px !important; color: #86868b !important; letter-spacing: 0.5px !important; line-height: 1.6 !important; }

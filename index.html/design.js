@@ -1,16 +1,16 @@
 /**
- * ART101 Lab 7 - 3D Interactive Carousel (Mouse Drag & Inertia Engine)
- * 功能：将原本死板的点击切盘全面重构为“商场旋转玻璃门”的自由鼠标拖拽滑行机制。
+ * ART101 Lab 7 - 3D 自由旋转门物理驱动引擎
+ * 功能：将定角点击完全重构为“鼠标按住随意拖拽滑行、松手智能吸附对齐”的旋转门系统。
  */
 
 $(document).ready(function() {
     let currentAngle = 0;      // 实时旋转角度
-    let isDragging = false;    // 鼠标是否按住拖拽中
-    let startX = 0;           // 鼠标按下时的初始物理 X 坐标
-    let baseAngle = 0;         // 拖拽开始时轮盘的初始角度
+    let isDragging = false;    // 是否拖拽中
+    let startX = 0;           // 鼠标按下的初始 X 坐标
+    let baseAngle = 0;         // 拖拽开始时轮盘的角度基准线
     
     // ==========================================================================
-    // 🎬 1. 动态自适应卡片工厂
+    // 🎬 1. 动态生成 4 个 3D 槽位 HTML
     // ==========================================================================
     function build3DCarousel() {
         const wheel = $(".carousel-wheel");
@@ -19,19 +19,15 @@ $(document).ready(function() {
             let cardHtml = "";
             if (typeof designWorks !== 'undefined' && designWorks[i]) {
                 cardHtml = `
-                    <div class="carousel-card glass-card" data-index="${i}" data-title="${designWorks[i].title}" data-desc="${designWorks[i].desc}">
+                    <div class="carousel-card glass-card" data-index="${i}" data-title="${designWorks[i].title}">
                         <div class="card-image-box">
                             <img src="${designWorks[i].img}" alt="Design Work">
-                            <div class="card-hover-overlay">
-                                <h3 class="overlay-title">${designWorks[i].title}</h3>
-                                <p class="overlay-desc">${designWorks[i].desc}</p>
-                            </div>
                         </div>
                     </div>
                 `;
             } else {
                 cardHtml = `
-                    <div class="carousel-card glass-card empty-panel" data-index="${i}" data-title="SYSTEM NODE // VACANT" data-desc="Empty slot. No graphic assets designated to this record channel yet.">
+                    <div class="carousel-card glass-card empty-panel" data-index="${i}" data-title="SYSTEM NODE // VACANT">
                         <div class="card-image-box empty-card">
                             <div class="acrylic-reflection"></div>
                         </div>
@@ -44,13 +40,13 @@ $(document).ready(function() {
 
     build3DCarousel();
 
-    // 根据跨页 ?id= 执行初始角度对齐
+    // 跨页传参路由解析对齐
     const urlParams = new URLSearchParams(window.location.search);
     const designId = urlParams.get('id'); 
     let initialIndex = designId !== null ? parseInt(designId) : 0;
     currentAngle = -(initialIndex * 90);
     
-    // 执行初次高亮分配
+    // 初始化对齐
     updateCardStates();
     $(".carousel-wheel").css({
         "transform": "translateZ(-250px) rotateY(" + currentAngle + "deg)",
@@ -58,43 +54,42 @@ $(document).ready(function() {
     });
 
     // ==========================================================================
-    // 🚀 2. 核心：像旋转门一样的鼠标自由拖拽算法链
+    // 🚀 2. 旋转门鼠标横向自由拖拽控制链
     // ==========================================================================
     
-    // A. 鼠标按下：捕获锚点
+    // A. 鼠标按下：锁定物理锚点
     $(document).on("mousedown", ".carousel-container", function(e) {
         isDragging = true;
-        startX = e.pageX;         // 记录按下的横向坐标
-        baseAngle = currentAngle; // 锁死当前角度作为拖拽基准线
+        startX = e.pageX;         
+        baseAngle = currentAngle; 
         
-        // 拖拽进行时，必须瞬间移除 CSS 的 transition 缓动动画，否则拖拽会严重粘手延迟！
+        // 拖拽时立刻掐断 CSS 缓动 transition，确保百分之百跟手感
         $(".carousel-wheel").css("transition", "none");
     });
 
-    // B. 鼠标移动：旋转门实时跟手滚转
+    // B. 鼠标移动：转盘无限制跟手旋转
     $(document).on("mousemove", function(e) {
         if (!isDragging) return;
         
-        let deltaX = e.pageX - startX; // 计算鼠标横向移动了多少像素
+        let deltaX = e.pageX - startX; // 计算鼠标拉动了多少像素
         
-        // 物理比例尺：鼠标在屏幕上每拖拽 3 像素，3D 玻璃门就旋转 1 度
+        // 比例尺：横向每拉动 3 像素，3D 玻璃门就跟手旋转 1 度，可无限往左/往右拉
         currentAngle = baseAngle + (deltaX / 3);
         
-        // 实时渲染跟手滚转，后退 250px 腾出空间
         $(".carousel-wheel").css("transform", "translateZ(-250px) rotateY(" + currentAngle + "deg)");
-        updateCardStates(); // 实时计算哪张卡片正对观众
+        updateCardStates(); // 实时测算哪个面正对观众
     });
 
-    // C. 鼠标抬起/离屏：智能吸附到最近的 $90^\circ$ 面板上面
+    // C. 鼠标抬起/离开网页：带惯性顺滑吸附对齐到最近的 $90^\circ$ 面板
     $(document).on("mouseup mouseleave", function() {
         if (!isDragging) return;
         isDragging = false;
 
-        // 🚀 核心纠偏：计算松手时，转盘最接近哪一个 90 度的倍数
+        // 计算松手时距离哪一个 90 度的卡片最近
         let closestIndex = Math.round(-currentAngle / 90);
-        currentAngle = -(closestIndex * 90); // 强行校准到绝对吸附角度
+        currentAngle = -(closestIndex * 90); // 强行拉回标准吸附线
 
-        // 松手复位时，必须重新加回 transition 1.2s 缓动，让旋转门极其顺滑地“滑行”归位
+        // 复位时加回 1.2 秒的物理缓动过渡，让玻璃门优雅滑行对齐
         $(".carousel-wheel").css({
             "transition": "transform 1.2s cubic-bezier(0.23, 1, 0.32, 1)",
             "transform": "translateZ(-250px) rotateY(" + currentAngle + "deg)"
@@ -104,20 +99,16 @@ $(document).ready(function() {
     });
 
     // ==========================================================================
-    // ⚙️ 3. 动态解密状态机：自动计算哪张卡片正对着观众
+    // ⚙️ 3. 动态状态机：重新分发高亮类并解码标题
     // ==========================================================================
     function updateCardStates() {
-        // 根据当前旋转角度，逆向换算出当前正对最前方的卡片索引 (0,1,2,3)
         let normalizedAngle = (Math.round(-currentAngle / 90) % 4 + 4) % 4;
 
         $(".carousel-card").removeClass("facing-front");
         let $frontCard = $(".carousel-card[data-index='" + normalizedAngle + "']");
-        $frontCard.addClass("facing-front"); // 分发面向观众的高亮控制类
+        $frontCard.addClass("facing-front"); 
 
-        // 抓取文字注入下方大抽屉
         let title = $frontCard.attr("data-title");
-        let desc = $frontCard.attr("data-desc");
         $("#meta-title").text(title);
-        $("#meta-desc").text(desc);
     }
 });
