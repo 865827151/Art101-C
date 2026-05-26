@@ -19,20 +19,21 @@
             justify-content: center;
             gap: 25px;
             max-width: 1200px;
-            margin: 50px auto;
+            margin: 40px auto; 
         }
 
         .char-card {
             flex: 0 1 calc(25% - 25px);
             min-width: 220px;
             text-align: center;
-            transition: transform 0.4s ease, opacity 0.4s ease;
+            transition: transform 0.4s ease;
         }
 
         .char-card img {
             width: 100%;
+            aspect-ratio: 1 / 1; 
+            object-fit: cover;
             border-radius: 18px;
-            /* 保持轻微阴影增加质感，但在白底上非常干净 */
             box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
         }
 
@@ -55,19 +56,57 @@
         #char-search:focus {
             border-color: #ccc;
         }
+
+        /* Apple 风格极简选项卡导航 */
+        .gallery-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .tab-item {
+            font-size: 13px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #000000;
+            opacity: 0.4;
+            cursor: pointer;
+            padding-bottom: 6px;
+            border-bottom: 1px solid transparent;
+            transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .tab-item:hover {
+            opacity: 0.8;
+        }
+
+        .tab-item.active {
+            opacity: 1;
+            font-weight: 400;
+            border-bottom: 1px solid #000000;
+        }
     </style>
 </head>
 <body>
 
     <div id="page">
-        <nav class="navigation">
-            <a href="index.html">Home</a>
-            <a href="lab04.html">Database</a>
+        <nav class="navigation" style="position: absolute; top: 40px; right: 50px; z-index: 1000; font-family: -apple-system, sans-serif;">
+            <a href="index.html" style="text-decoration: none; color: #000; font-size: 13px; letter-spacing: 1px; opacity: 0.5; margin-right: 25px;">Home</a>
+            <a href="design.html?id=0" style="text-decoration: none; color: #000; font-size: 13px; letter-spacing: 1px; opacity: 0.5;">2D Design</a>
         </nav>
 
         <header style="text-align:center; margin-top:80px;">
             <h1 class="main-title" style="font-weight: 300; letter-spacing: 2px;">Character Archive</h1>
-            <input type="text" id="char-search" placeholder="Search... (❛◡❛✿)">
+            <div style="display: inline-block;">
+                <input type="text" id="char-search" placeholder="Search... (❛◡❛✿)">
+                
+                <div class="gallery-tabs">
+                    <span class="tab-item active" data-category="anime">Anime Wiki</span>
+                    <span class="tab-item" data-category="graphic">2D Design</span>
+                </div>
+            </div>
         </header>
 
         <main class="gallery-grid" id="gallery-grid"></main>
@@ -78,15 +117,18 @@
 
     <script>
         $(document).ready(function() {
-            // 1. 动态渲染函数
+            // 当前处于高亮激活状态的分类，默认是动漫
+            let currentCategory = "anime";
+
+            // 1. 动态全自动渲染函数（完全摆脱手动绑定）
             function renderGallery() {
                 const container = $("#gallery-grid");
                 container.empty();
 
-                // 遍历 lab04.js 里的数组
+                // A. 读取 lab04.js 自动生成美少女卡片
                 characters.forEach((char, index) => {
-                    const card = `
-                        <div class="char-card" data-name="${char.title.toLowerCase()}">
+                    container.append(`
+                        <div class="char-card" data-cat="anime" data-name="${char.title.toLowerCase()}">
                             <a href="lab04.html?id=${index}" style="text-decoration: none; color: inherit;">
                                 <div class="glass-cover">
                                     <img src="${char.img}" alt="${char.title}">
@@ -94,20 +136,62 @@
                                 </div>
                             </a>
                         </div>
-                    `;
-                    container.append(card);
+                    `);
+                });
+
+                // B. ✨ 读取 lab04.js 全自动生成平面设计卡片，并自动附带 ?id= 动态路由
+                designWorks.forEach((work, index) => {
+                    // 自动提取精致的简短名字展示在页面上
+                    let displayTitle = work.title.split(' ')[0]; 
+
+                    container.append(`
+                        <div class="char-card" data-cat="graphic" data-name="${work.title.toLowerCase()}" style="display: none;">
+                            <a href="design.html?id=${index}" style="text-decoration: none; color: inherit;">
+                                <div class="glass-cover">
+                                    <img src="${work.img}" alt="${work.title}">
+                                    <h3>${displayTitle} Menu</h3>
+                                </div>
+                            </a>
+                        </div>
+                    `);
                 });
             }
 
+            // 执行中央初始流渲染
             renderGallery();
 
-            // 2. 纯净搜索逻辑（不改变背景色）
+            // ==========================================
+            // 💡 2. 分类选项卡点击平滑切换事件
+            // ==========================================
+            $(".tab-item").click(function() {
+                $(".tab-item").removeClass("active");
+                $(this).addClass("active");
+
+                currentCategory = $(this).attr("data-category");
+
+                // 切换标签时清空搜索栏文字
+                $("#char-search").val("");
+
+                // 物理彻底切断残影，消灭切换时的一帧闪烁
+                $(".char-card").css("display", "none");
+
+                // 仅仅呼唤锁定分类的卡片执行平滑淡入
+                $(".char-card[data-cat='" + currentCategory + "']")
+                    .css("display", "block") 
+                    .hide()                  
+                    .fadeIn(200);            
+            });
+
+            // ==========================================
+            // 💡 3. 分类锁定——纯净智能联动搜索逻辑
+            // ==========================================
             $("#char-search").on("keyup", function() {
                 let val = $(this).val().toLowerCase().trim();
                 
-                $(".char-card").each(function() {
-                    // 如果名字匹配就显示，不匹配就隐藏
-                    $(this).toggle($(this).attr("data-name").includes(val));
+                // 仅筛选当前处于高亮分类中的节点，从物理上隔绝串词穿帮
+                $(".char-card[data-cat='" + currentCategory + "']").each(function() {
+                    let isMatch = $(this).attr("data-name").includes(val);
+                    $(this).toggle(isMatch);
                 });
             });
         });

@@ -1,0 +1,204 @@
+/* ==========================================================================
+   Design Gallery Page - 3D Free-Spinning Architecture (Lab 7)
+   ========================================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box !important;
+    user-select: none; /* 🚀 拖拽核心：防止拖动鼠标时选中文本蓝块 */
+    -webkit-user-drag: none; /* 防止拖动时触发浏览器默认的图片拖拽 */
+}
+
+body.carousel-body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro SC", "PingFang SC", sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden !important; 
+}
+
+#page {
+    width: 100% !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    position: relative !important;
+}
+
+.carousel-stage {
+    flex: 1 !important;
+    width: 100% !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+}
+
+.carousel-header {
+    text-align: center !important;
+    position: absolute !important;
+    top: 60px !important; 
+    z-index: 999 !important;
+}
+
+.carousel-title {
+    font-size: 24px !important;
+    font-weight: 200 !important;
+    letter-spacing: 6px !important;
+    color: #1d1d1f !important;
+    margin-bottom: 10px !important;
+}
+
+.carousel-subtitle {
+    font-size: 12px !important;
+    color: #86868b !important;
+    letter-spacing: 1px !important;
+}
+
+/* 🎬 3D 舞台视距 */
+.carousel-container {
+    width: 600px !important; 
+    height: 395px !important; 
+    position: relative !important;
+    perspective: 1800px !important; 
+    margin-top: 20px !important;
+    cursor: grab; /* 🚀 抓取手势：提示用户这里可以按住拖拽 */
+}
+
+.carousel-container:active {
+    cursor: grabbing; /* 按住时的抓取手势 */
+}
+
+/* 3D 大旋转门底盘：拖拽时去掉 transition 保证手感跟手，松开时由 JS 控制平滑过渡 */
+.carousel-wheel {
+    width: 600px !important;   
+    height: 395px !important;  
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    margin-top: -197px !important;        
+    margin-left: -300px !important;       
+    transform-style: preserve-3d !important; 
+    transform: translateZ(-250px) rotateY(0deg); 
+    pointer-events: auto !important;
+}
+
+/* 💎 压克力玻璃外壳 */
+.carousel-card.glass-card {
+    position: absolute !important;
+    width: 280px !important;  
+    height: 395px !important; 
+    left: 50% !important;
+    top: 0 !important;
+    margin-left: -140px !important; 
+    background: rgba(255, 255, 255, 0.01) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important; 
+    border-radius: 20px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.01) !important; 
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important; 
+    pointer-events: auto !important;
+    -webkit-backface-visibility: visible !important;
+    backface-visibility: visible !important;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease !important;
+}
+
+/* 🚀 4个方向几何坐标牢牢固定 */
+.carousel-card[data-index="0"] { transform: rotateY(0deg) translateZ(250px) !important; }
+.carousel-card[data-index="1"] { transform: rotateY(90deg) translateZ(250px) !important; }
+.carousel-card[data-index="2"] { transform: rotateY(180deg) translateZ(250px) !important; }
+.carousel-card[data-index="3"] { transform: rotateY(270deg) translateZ(250px) !important; }
+
+/* 正中央焦点状态：由 JS 动态计算分发（当卡片面向观众时激活） */
+.carousel-card.glass-card.facing-front {
+    border-color: rgba(0, 0, 0, 0.25) !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.05) !important;
+    z-index: 100 !important;
+}
+
+.card-image-box {
+    width: 100% !important;
+    height: 100% !important; 
+    position: relative !important;
+}
+
+.card-image-box img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; 
+    display: block !important;
+}
+
+/* 空置槽位的透明压克力效果 */
+.empty-card {
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.003) 100%) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    backdrop-filter: blur(15px) !important;
+    border-radius: 20px !important;
+}
+
+.acrylic-reflection {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(105deg, transparent 30%, rgba(0, 0, 0, 0.01) 40%, rgba(0, 0, 0, 0.02) 45%, transparent 50%) !important;
+}
+
+/* 全英文奶油白磨砂 Hover 面板 */
+.card-hover-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(255, 255, 255, 0.94) !important; 
+    -webkit-backdrop-filter: blur(25px) !important;   
+    backdrop-filter: blur(25px) !important;
+    opacity: 0 !important; 
+    visibility: hidden !important;
+    padding: 35px 20px !important; 
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    transition: opacity 0.35s ease, visibility 0.35s ease !important;
+    z-index: 999 !important;
+}
+
+.overlay-title { font-size: 14px !important; font-weight: 500 !important; letter-spacing: 1px !important; color: #1d1d1f !important; margin-bottom: 8px !important; text-transform: uppercase !important; }
+.overlay-desc { font-size: 11px !important; line-height: 1.6 !important; color: #333336 !important; letter-spacing: 0.2px !important; }
+
+/* 🚨 触碰瞬间：只有当前正面对准观众的卡片，才允许触发向外挺出放大和磨砂融化 */
+.carousel-card[data-index="0"].facing-front:hover { transform: rotateY(0deg) translateZ(250px) scale(1.1) !important; }
+.carousel-card[data-index="1"].facing-front:hover { transform: rotateY(90deg) translateZ(250px) scale(1.1) !important; }
+.carousel-card[data-index="2"].facing-front:hover { transform: rotateY(180deg) translateZ(250px) scale(1.1) !important; }
+.carousel-card[data-index="3"].facing-front:hover { transform: rotateY(270deg) translateZ(250px) scale(1.1) !important; }
+
+.carousel-wheel .carousel-card.facing-front:hover {
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08) !important;
+    z-index: 9999 !important;
+}
+
+.carousel-wheel .carousel-card.facing-front:hover .card-hover-overlay {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* 下方数据解码大抽屉 */
+.carousel-meta-drawer {
+    position: absolute !important;
+    bottom: 50px !important; 
+    text-align: center !important;
+    max-width: 500px;
+    z-index: 999 !important;
+}
+#meta-title { font-size: 14px !important; font-weight: 400 !important; letter-spacing: 2px !important; color: #1d1d1f !important; margin-bottom: 6px !important; text-transform: uppercase !important; }
+.drawer-line { border: none !important; border-top: 1px solid rgba(0, 0, 0, 0.06) !important; width: 40px !important; margin: 10px auto !important; }
+#meta-desc { font-size: 11px !important; color: #86868b !important; letter-spacing: 0.5px !important; line-height: 1.6 !important; }

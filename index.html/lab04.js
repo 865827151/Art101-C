@@ -1,8 +1,12 @@
 /**
- * ART101 Lab 6 - jQuery Events and Page Manipulations
- * 功能：基于原数据结构，无缝融入图片区独立 3D 翻转玻璃拟态，支持空格控制 Live 跟随光圈
+ * ART101 Lab 6 - Integrated Central Database (Anime + Graphic Design)
+ * 功能：中央唯一数据仓库。包含动漫角色解密数据与 2D 平面设计资产列表。
+ * 核心：以后添加新设计作品，只需在最底部的 designWorks 数组中加一行，全站自动同步！
  */
 
+// ==========================================================================
+// 🎸 SECTION A: 动漫美少女角色核心数据源 (保持你原有的完美逻辑)
+// ==========================================================================
 const characters = [
     {
         title: "Bocchi",
@@ -105,10 +109,13 @@ $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
     const charId = urlParams.get('id');
 
-    if (charId !== null) {
-        switchCharacter(charId);
-    } else {
-        switchCharacter(0);
+    // 💡 只有当页面存在动漫渲染节点时才执行初始化，防止污染独立 design.html 页面
+    if ($("#gallery-grid").length || $(".character-card").length) {
+        if (charId !== null) {
+            switchCharacter(charId);
+        } else {
+            switchCharacter(0);
+        }
     }
 
     // B. 黑按钮点击事件
@@ -123,17 +130,15 @@ $(document).ready(function() {
     });
 
     // ==========================================
-    // 💡 D. 【Lab 6 交互 1】：只对图片区进行悬停与动态 3D 翻转 (全英文高级版)
+    // 💡 D. 只对图片区进行悬停与动态 3D 翻转 (全英文高级版)
     // ==========================================
     $(".card-scene").hover(
         function() {
             const char = characters[charIndex];
             
-            // 极致极简的英文毛玻璃面板排版
             $("#back-char-title").text("ぼっち・ざ・ろっく！"); 
             $("#back-char-instrument").text("DECRYPTED STATUS // SYSTEM: ONLINE");
             
-            // 动态渲染纯英文深度性格/乐队定位小传
             let profileHtml = `
                 <div class="back-states-list">
                     <h4>[ CORE RECORD ]</h4>
@@ -144,22 +149,20 @@ $(document).ready(function() {
             `;
             $("#back-char-states").html(profileHtml);
 
-            // 只让图片包裹层 .image-wrapper 发生翻转
             $(this).find(".image-wrapper").addClass("flipped");
         },
         function() {
-            // 鼠标移出，翻转回来
             $(this).find(".image-wrapper").removeClass("flipped");
         }
     );
 
     // ==========================================
-    // 💡 E. 【Lab 6 交互 2】：全局键盘空格键（Space）开关
+    // 💡 E. 全局键盘空格键（Space）开关
     // ==========================================
     $(document).keydown(function(event) {
-        if (event.key === " " || event.code === "Space") {
+        // 💡 仅在动漫详情页激活此光圈跟随逻辑，避免干扰 3D 轮盘的空格自转逻辑
+        if ($(".character-card").length && (event.key === " " || event.code === "Space")) {
             event.preventDefault(); 
-
             following = !following; 
 
             if (following === true) {
@@ -173,7 +176,7 @@ $(document).ready(function() {
     });
 
     // ==========================================
-    // 💡 F. 【Lab 6 交互 3】：鼠标移动控制聚光灯光圈跟随
+    // 💡 F. 鼠标移动控制聚光灯光圈跟随
     // ==========================================
     $(document).mousemove(function(event) {
         if (following === true) {
@@ -184,3 +187,22 @@ $(document).ready(function() {
         }
     });
 });
+
+
+// ==========================================================================
+// 🎨 ✨ SECTION B: 全新追加的 2D 平面设计专属数据仓库 (Data Reservoir)
+// ==========================================================================
+const designWorks = [
+    { 
+        title: "BREW & CO. EDITORIAL", 
+        img: "images/coffee.png", 
+        desc: "Structured typography and warm ambient tones for commercial menu design." 
+    },
+    { 
+        title: "COZY CAFÉ ILLUSTRATION", 
+        img: "images/coffee2.jpg", 
+        desc: "A serene Japanese watercolor aesthetic featuring refreshing blue tones, hand-drawn typography, and delicate visual storytelling." 
+    }
+    // 🚀 【捷径声明】：以后你有任何新作品，直接在下方复制粘贴追加新行即可，全站两边页面自动加载！
+    // 例：{ title: "作品名", img: "images/图名.jpg", desc: "英文简述。" }
+];

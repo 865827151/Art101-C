@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Gallery | 3D Interactive Door</title>
+    <link rel="stylesheet" href="design.css">
+</head>
+<body class="carousel-body">
+
+    <div id="page">
+        <nav class="navigation" style="position: absolute; top: 40px; right: 50px; z-index: 1000; font-family: -apple-system, sans-serif;">
+            <a href="index.html" style="text-decoration: none; color: #000; font-size: 13px; letter-spacing: 1px; opacity: 0.5; margin-right: 25px;">Home</a>
+            <a href="characters.html" style="text-decoration: none; color: #000; font-size: 13px; letter-spacing: 1px; opacity: 0.5;">Characters</a>
+        </nav>
+
+        <main class="carousel-stage">
+            
+            <header class="carousel-header">
+                <h1 class="carousel-title">ROTATING ARCHIVE</h1>
+                <p id="carousel-status" class="carousel-subtitle">Click and drag horizontally to spin the glass door freely.</p>
+            </header>
+
+            <div class="carousel-container">
+                <div class="carousel-wheel"></div>
+            </div>
+
+            <div class="carousel-meta-drawer">
+                <h2 id="meta-title">Project Title</h2>
+                <hr class="drawer-line">
+                <p id="meta-desc">Drag the door to decrypt design specifications.</p>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="lab04.js"></script>
+    <script src="design.js" defer></script>
+</body>
+</html>
